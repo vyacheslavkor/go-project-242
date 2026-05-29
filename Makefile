@@ -12,3 +12,6 @@ lint-fix:
 
 test:
 	go test ./tests/...
+
+format:
+	go fmt ./...
