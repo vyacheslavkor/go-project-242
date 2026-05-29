@@ -16,7 +16,7 @@ func main() {
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			const expectedArgsCount = 1
 			if cmd.Args().Len() != expectedArgsCount {
-				return cli.Exit(fmt.Sprintf("incorrect usage: expected 1 argument, got %d", cmd.Args().Len()), expectedArgsCount)
+				return cli.Exit(fmt.Sprintf("incorrect usage: expected 1 argument, got %d", cmd.Args().Len()), 1)
 			}
 
 			path := cmd.Args().Get(0)
