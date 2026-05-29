@@ -32,7 +32,7 @@ func main() {
 			&cli.BoolFlag{
 				Name:        "recursive",
 				Aliases:     []string{"r"},
-				Usage:       "include hidden files and directories",
+				Usage:       "recursive size of directories",
 				DefaultText: "false",
 			},
 			&cli.BoolFlag{
