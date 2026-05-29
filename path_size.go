@@ -3,8 +3,8 @@ package code
 import (
 	"fmt"
 	"os"
-	"strings"
 	"path/filepath"
+	"strings"
 )
 
 func formatSize(size int64, human bool) string {
