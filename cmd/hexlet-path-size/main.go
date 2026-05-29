@@ -14,8 +14,9 @@ func main() {
 		Name:  "hexlet-path-size",
 		Usage: "print size of a file or directory",
 		Action: func(ctx context.Context, cmd *cli.Command) error {
-			if cmd.Args().Len() != 1 {
-				return cli.Exit(fmt.Sprintf("incorrect usage: expected 1 argument, got %d", cmd.Args().Len()), 1)
+			const expectedArgsCount = 1
+			if cmd.Args().Len() != expectedArgsCount {
+				return cli.Exit(fmt.Sprintf("incorrect usage: expected 1 argument, got %d", cmd.Args().Len()), expectedArgsCount)
 			}
 
 			path := cmd.Args().Get(0)
