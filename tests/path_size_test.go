@@ -1,19 +1,19 @@
 package code_test
 
 import (
-	"testing"
-	"github.com/stretchr/testify/require"
 	"code"
+	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestGetPathSize(t *testing.T) {
-	testCases := [] struct {
-		name string
-		path string
+	testCases := []struct {
+		name      string
+		path      string
 		recursive bool
-		human bool
-		all bool
-		expected string
+		human     bool
+		all       bool
+		expected  string
 	}{
 		{name: "file", path: "./../testdata/file1.txt", recursive: false, human: false, all: false, expected: "2906B"},
 		{name: "directory", path: "./../testdata/in", recursive: false, human: false, all: false, expected: "2412B"},
