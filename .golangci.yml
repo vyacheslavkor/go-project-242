@@ -38,6 +38,7 @@ linters:
     - noctx
     - misspell
     - funlen
+    - dupl
 
   settings:
     cyclop:
