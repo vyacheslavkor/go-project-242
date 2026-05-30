@@ -3,12 +3,29 @@ package main
 import (
 	"code"
 	"context"
+	"errors"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/urfave/cli/v3"
 )
+
+type ArgumentsCountError struct {
+	Expected int
+	Got      int
+}
+
+func (e *ArgumentsCountError) Error() string {
+	return fmt.Sprintf("incorrect usage: expected %d argument, got %d", e.Expected, e.Got)
+}
+
+type UsageError struct {
+	Err error
+}
+
+func (e *UsageError) Error() string {
+	return fmt.Sprintf("incorrect usage: %s", e.Err)
+}
 
 func main() {
 	cmd := &cli.Command{
@@ -17,21 +34,21 @@ func main() {
 		Action: func(_ context.Context, cmd *cli.Command) error {
 			const expectedArgsCount = 1
 			if cmd.Args().Len() != expectedArgsCount {
-				return cli.Exit(
-					fmt.Sprintf("incorrect usage: expected 1 argument, got %d", cmd.Args().Len()),
-					1,
-				)
+				return &ArgumentsCountError{
+					Expected: expectedArgsCount,
+					Got:      cmd.Args().Len(),
+				}
 			}
 
 			path := cmd.Args().Get(0)
-			fileSize, error := code.GetPathSize(
+			fileSize, err := code.GetPathSize(
 				path,
 				cmd.Bool("recursive"),
 				cmd.Bool("human"),
 				cmd.Bool("all"),
 			)
-			if error != nil {
-				return error
+			if err != nil {
+				return err
 			}
 
 			result := fmt.Sprintf("%s\t%s", fileSize, path)
@@ -59,9 +76,24 @@ func main() {
 			},
 		},
 		ArgsUsage: "<path>",
+		OnUsageError: func(ctx context.Context, cmd *cli.Command, err error, isSubcommand bool) error {
+			return &UsageError{Err: err}
+		},
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		log.Fatal(err)
+		var argumentsCountError *ArgumentsCountError
+		var usageError *UsageError
+
+		if errors.As(err, &argumentsCountError) || errors.As(err, &usageError) {
+			showHelpError := cli.ShowAppHelp(cmd)
+			if showHelpError != nil {
+				fmt.Println("Run 'make help' for usage instructions.")
+			}
+		}
+
+		fmt.Println(err)
+
+		os.Exit(1)
 	}
 }
