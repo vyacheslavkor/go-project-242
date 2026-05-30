@@ -65,7 +65,11 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 
 		if fileInfo.IsDir() {
 			if recursive {
-				subResult, subError := getDirectorySize(filepath.Join(path, file.Name()), recursive, all)
+				subResult, subError := getDirectorySize(
+					filepath.Join(path, file.Name()),
+					recursive,
+					all,
+				)
 				if subError != nil {
 					return 0, subError
 				}
@@ -101,11 +105,10 @@ func GetPathSize(path string, recursive, human, all bool) (string, error) {
 
 		result = dirResult
 	} else {
-		if !fileInfo.Mode().IsRegular() {
+		switch {
+		case !fileInfo.Mode().IsRegular(), !all && strings.HasPrefix(fileInfo.Name(), "."):
 			result = 0
-		} else if !all && strings.HasPrefix(fileInfo.Name(), ".") {
-			result = 0
-		} else {
+		default:
 			result = fileInfo.Size()
 		}
 	}
