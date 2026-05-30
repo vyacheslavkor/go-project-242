@@ -4,23 +4,32 @@ import (
 	"code"
 	"context"
 	"fmt"
-	"github.com/urfave/cli/v3"
 	"log"
 	"os"
+
+	"github.com/urfave/cli/v3"
 )
 
 func main() {
 	cmd := &cli.Command{
 		Name:  "hexlet-path-size",
 		Usage: "print size of a file or directory",
-		Action: func(ctx context.Context, cmd *cli.Command) error {
+		Action: func(_ context.Context, cmd *cli.Command) error {
 			const expectedArgsCount = 1
 			if cmd.Args().Len() != expectedArgsCount {
-				return cli.Exit(fmt.Sprintf("incorrect usage: expected 1 argument, got %d", cmd.Args().Len()), 1)
+				return cli.Exit(
+					fmt.Sprintf("incorrect usage: expected 1 argument, got %d", cmd.Args().Len()),
+					1,
+				)
 			}
 
 			path := cmd.Args().Get(0)
-			fileSize, error := code.GetPathSize(path, cmd.Bool("recursive"), cmd.Bool("human"), cmd.Bool("all"))
+			fileSize, error := code.GetPathSize(
+				path,
+				cmd.Bool("recursive"),
+				cmd.Bool("human"),
+				cmd.Bool("all"),
+			)
 			if error != nil {
 				return error
 			}
