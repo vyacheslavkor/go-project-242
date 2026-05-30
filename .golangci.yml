@@ -6,7 +6,62 @@ run:
 
 formatters:
   enable:
-    - gofmt
+    - gofumpt
+    - goimports
+
+  settings:
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes: github.com/vyacheslavkor/go-project-242
 
 linters:
-  default: standard
+  disable-all: true
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+    - gosec
+    - prealloc
+    - perfsprint
+    - copyloopvar
+
+    - cyclop
+    - gocritic
+    - revive
+    - nakedret
+    - nolintlint
+    - bodyclose
+    - noctx
+    - misspell
+    - funlen
+
+  settings:
+    cyclop:
+      max-complexity: 15
+      package-average: 0.0
+      skip-tests: true
+
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+      disabled-checks:
+        - hugeParam
+    revive:
+      confidence: 0.8
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+    funlen:
+      lines: 100
+      statements: 50
