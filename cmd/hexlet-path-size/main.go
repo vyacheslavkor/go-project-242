@@ -19,12 +19,19 @@ func (e *ArgumentsCountError) Error() string {
 	return fmt.Sprintf("incorrect usage: expected %d argument, got %d", e.Expected, e.Got)
 }
 
-type UsageError struct {
+type FlagError struct {
 	Err error
 }
 
-func (e *UsageError) Error() string {
+func (e *FlagError) Error() string {
 	return fmt.Sprintf("incorrect usage: %s", e.Err)
+}
+
+func isCommandUsageError(err error) bool {
+	var argumentsCountError *ArgumentsCountError
+	var flagError *FlagError
+
+	return errors.As(err, &argumentsCountError) || errors.As(err, &flagError)
 }
 
 func main() {
@@ -77,15 +84,12 @@ func main() {
 		},
 		ArgsUsage: "<path>",
 		OnUsageError: func(ctx context.Context, cmd *cli.Command, err error, isSubcommand bool) error {
-			return &UsageError{Err: err}
+			return &FlagError{Err: err}
 		},
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		var argumentsCountError *ArgumentsCountError
-		var usageError *UsageError
-
-		if errors.As(err, &argumentsCountError) || errors.As(err, &usageError) {
+		if isCommandUsageError(err) {
 			showHelpError := cli.ShowAppHelp(cmd)
 			if showHelpError != nil {
 				fmt.Println("Run 'make help' for usage instructions.")
