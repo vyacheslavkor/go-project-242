@@ -115,5 +115,5 @@ func GetPathSize(path string, recursive, human, all bool) (string, error) {
 		}
 	}
 
-	return formatSize(result, human), nil
+	return FormatSize(result, human), nil
 }
