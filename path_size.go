@@ -72,35 +72,43 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	}
 
 	for _, file := range files {
-		fileInfo, err := file.Info()
+		entrySize, err := processDirEntry(file, path, recursive, all)
 		if err != nil {
-			return 0, fmt.Errorf("failed to read file info: %w", err)
+			return 0, err
 		}
-
-		if fileInfo.IsDir() {
-			if recursive {
-				subResult, subError := getDirectorySize(
-					filepath.Join(path, file.Name()),
-					recursive,
-					all,
-				)
-				if subError != nil {
-					return 0, subError
-				}
-				result += subResult
-			} else {
-				continue
-			}
-		} else {
-			if !fileInfo.Mode().IsRegular() {
-				continue
-			}
-
-			result += fileInfo.Size()
-		}
+		result += entrySize
 	}
 
 	return result, nil
+}
+
+func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64, error) {
+	fileInfo, err := file.Info()
+	if err != nil {
+		return 0, fmt.Errorf("failed to read file info: %w", err)
+	}
+
+	if fileInfo.IsDir() {
+		if recursive {
+			subResult, subError := getDirectorySize(
+				filepath.Join(path, file.Name()),
+				recursive,
+				all,
+			)
+			if subError != nil {
+				return 0, subError
+			}
+			return subResult, nil
+		} else {
+			return 0, nil
+		}
+	}
+
+	if !fileInfo.Mode().IsRegular() {
+		return 0, nil
+	}
+
+	return fileInfo.Size(), nil
 }
 
 func GetPathSize(path string, recursive, human, all bool) (string, error) {
