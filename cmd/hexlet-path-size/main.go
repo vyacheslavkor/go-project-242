@@ -89,14 +89,24 @@ func main() {
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		if isCommandUsageError(err) {
+		isUsageError := isCommandUsageError(err)
+		if isUsageError {
 			showHelpError := cli.ShowAppHelp(cmd)
 			if showHelpError != nil {
 				fmt.Println("Run 'make help' for usage instructions.")
 			}
 		}
 
-		fmt.Println(err)
+		var userErr *code.UserError
+		if errors.As(err, &userErr) {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		} else {
+			if isUsageError {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+			} else {
+				fmt.Fprintf(os.Stderr, "system error: %v\n", err)
+			}
+		}
 
 		os.Exit(1)
 	}
