@@ -2,12 +2,33 @@ package code_test
 
 import (
 	"code"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetPathSize(t *testing.T) {
+	symlinkRoot := filepath.Join("..", "testdata", "in_s_dynamic")
+	_ = os.Remove(symlinkRoot)
+
+	errRoot := os.Symlink("in", symlinkRoot)
+	t.Cleanup(func() {
+		_ = os.Remove(symlinkRoot)
+	})
+
+	require.NoError(t, errRoot)
+
+	symlinkNested := filepath.Join("..", "testdata", "in", "nested_s_dynamic")
+	_ = os.Remove(symlinkNested)
+
+	errNested := os.Symlink("..", symlinkNested)
+	t.Cleanup(func() {
+		_ = os.Remove(symlinkNested)
+	})
+	require.NoError(t, errNested)
+
 	testCases := []struct {
 		name      string
 		path      string
@@ -23,6 +44,14 @@ func TestGetPathSize(t *testing.T) {
 			human:     false,
 			all:       false,
 			expected:  "2906B",
+		},
+		{
+			name:      "symlinc file",
+			path:      "./../testdata/in_s_dynamic",
+			recursive: false,
+			human:     false,
+			all:       false,
+			expected:  "0B",
 		},
 		{
 			name:      "directory",
@@ -57,7 +86,7 @@ func TestGetPathSize(t *testing.T) {
 			expected:  "0B",
 		},
 		{
-			name:      "recursive directory",
+			name:      "recursive directory with symlink",
 			path:      "./../testdata",
 			recursive: true,
 			human:     false,
@@ -81,6 +110,7 @@ func TestGetPathSize(t *testing.T) {
 
 	t.Run("non-existent path", func(t *testing.T) {
 		_, err := code.GetPathSize("./../testdata/adjfgjkdasf", false, false, false)
-		require.Error(t, err)
+		var userErr *code.UserError
+		require.ErrorAs(t, err, &userErr)
 	})
 }
