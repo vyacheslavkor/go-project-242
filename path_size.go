@@ -1,11 +1,21 @@
 package code
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+type UserError struct {
+	Message string
+	Path    string
+}
+
+func (e *UserError) Error() string {
+	return fmt.Sprintf("%s: %s", e.Message, e.Path)
+}
 
 func formatSize(size int64, human bool) string {
 	if human {
@@ -44,7 +54,11 @@ func filterHiddenFiles(files []os.DirEntry) []os.DirEntry {
 func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return 0, err
+		if errors.Is(err, os.ErrPermission) {
+			return 0, &UserError{Message: "permission denied", Path: path}
+		}
+
+		return 0, fmt.Errorf("failed to read directory: %w", err)
 	}
 
 	if !all {
@@ -60,7 +74,7 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	for _, file := range files {
 		fileInfo, err := file.Info()
 		if err != nil {
-			return 0, err
+			return 0, fmt.Errorf("failed to read file info: %w", err)
 		}
 
 		if fileInfo.IsDir() {
@@ -92,7 +106,11 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 func GetPathSize(path string, recursive, human, all bool) (string, error) {
 	fileInfo, err := os.Lstat(path)
 	if err != nil {
-		return "", err
+		if errors.Is(err, os.ErrNotExist) {
+			return "", &UserError{Message: "path not exists", Path: path}
+		}
+
+		return "", fmt.Errorf("failed to read path metadata: %w", err)
 	}
 
 	result := int64(0)
