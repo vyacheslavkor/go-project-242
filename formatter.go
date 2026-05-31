@@ -2,7 +2,7 @@ package code
 
 import "fmt"
 
-func formatSize(size int64, human bool) string {
+func FormatSize(size int64, human bool) string {
 	if human {
 		return formatToHuman(size)
 	}
