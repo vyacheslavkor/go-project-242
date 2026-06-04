@@ -2,6 +2,8 @@ package code
 
 import "fmt"
 
+var units = []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
+
 func FormatSize(size int64, human bool) string {
 	if human {
 		return formatToHuman(size)
@@ -11,7 +13,6 @@ func FormatSize(size int64, human bool) string {
 
 func formatToHuman(size int64) string {
 	sizeFloat := float64(size)
-	units := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	unitIndex := 0
 	sizeStepMultiplier := float64(1024)
 	for sizeFloat >= sizeStepMultiplier && unitIndex < len(units)-1 {
