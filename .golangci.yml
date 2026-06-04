@@ -13,10 +13,10 @@ formatters:
     gofumpt:
       extra-rules: true
     goimports:
-      local-prefixes: github.com/vyacheslavkor/go-project-242
+      local-prefixes:
+        - github.com/vyacheslavkor/go-project-242
 
 linters:
-  disable-all: true
   enable:
     - errcheck
     - govet
@@ -44,7 +44,6 @@ linters:
     cyclop:
       max-complexity: 10
       package-average: 0.0
-      skip-tests: true
 
     gocritic:
       enabled-tags:
