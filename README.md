@@ -1,6 +1,6 @@
 # Hexlet Path Size
 
-[![Actions Status](https://github.com/vyacheslavkor/go-project-242/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/vyacheslavkor/go-project-242/actions)
+[![Actions Status](https://github.com/vyacheslavkor/go-project-242/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/vyacheslavkor/go-project-242/actions) [![CI Status](https://github.com/vyacheslavkor/go-project-242/actions/workflows/ci.yml/badge.svg)](https://github.com/vyacheslavkor/go-project-242/actions/workflows/ci.yml)
 
 A fast, standard-compliant command-line utility written in Go for calculating the size of files and directories. 
 
