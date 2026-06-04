@@ -5,7 +5,7 @@
 A fast, standard-compliant command-line utility written in Go for calculating the size of files and directories. 
 
 ## Demo
-[![asciicast](https://asciinema.org/a/1077409.svg)](https://asciinema.org/a/1077409)
+[![asciicast](https://asciinema.org/a/1188002.svg)](https://asciinema.org/a/1188002)
 
 ## Installation
 
