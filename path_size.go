@@ -13,6 +13,10 @@ type UserError struct {
 	Path    string
 }
 
+type Namer interface {
+	Name() string
+}
+
 func (e *UserError) Error() string {
 	return fmt.Sprintf("%s: %s", e.Message, e.Path)
 }
@@ -20,7 +24,7 @@ func (e *UserError) Error() string {
 func filterHiddenFiles(files []os.DirEntry) []os.DirEntry {
 	result := []os.DirEntry{}
 	for _, file := range files {
-		if !strings.HasPrefix(file.Name(), ".") {
+		if !isHiddenFile(file) {
 			result = append(result, file)
 		}
 	}
@@ -87,6 +91,10 @@ func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64,
 	return fileInfo.Size(), nil
 }
 
+func isHiddenFile(file Namer) bool {
+	return strings.HasPrefix(file.Name(), ".")
+}
+
 func GetPathSize(path string, recursive, human, all bool) (string, error) {
 	fileInfo, err := os.Lstat(path)
 	if err != nil {
@@ -107,11 +115,14 @@ func GetPathSize(path string, recursive, human, all bool) (string, error) {
 
 		result = dirResult
 	} else {
+		mode := fileInfo.Mode()
 		switch {
-		case !fileInfo.Mode().IsRegular(), !all && strings.HasPrefix(fileInfo.Name(), "."):
+		case !all && isHiddenFile(fileInfo):
 			result = 0
-		default:
+		case mode.IsRegular(), mode.Type() == os.ModeSymlink:
 			result = fileInfo.Size()
+		default:
+			result = 0
 		}
 	}
 
