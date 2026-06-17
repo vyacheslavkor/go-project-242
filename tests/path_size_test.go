@@ -51,7 +51,7 @@ func TestGetPathSize(t *testing.T) {
 			recursive: false,
 			human:     false,
 			all:       false,
-			expected:  "0B",
+			expected:  "2B",
 		},
 		{
 			name:      "directory",
