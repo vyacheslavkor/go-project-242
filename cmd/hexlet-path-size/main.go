@@ -83,6 +83,14 @@ func main() {
 			},
 		},
 		ArgsUsage: "<path>",
+		Description: `Calculate and print the size of a file or directory.
+
+CALCULATION RULES:
+- Regular files: evaluated by their actual size.
+- Symlinks: evaluated by the size of the link itself, not the target file.
+- Hidden files/dirs: ignored (returns 0B) unless the --all (-a) flag is provided. This rule applies even if a hidden file is passed directly as an argument.
+- Special files (sockets, devices, pipes): ignored (returns 0B).
+- Hard links: evaluated as regular files. No deduplication is performed during recursive directory traversal.`,
 		OnUsageError: func(ctx context.Context, cmd *cli.Command, err error, isSubcommand bool) error {
 			return &FlagError{Err: err}
 		},
