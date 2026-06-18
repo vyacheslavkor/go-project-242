@@ -47,10 +47,6 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 
 	result := int64(0)
 
-	if len(files) == 0 {
-		return result, nil
-	}
-
 	for _, file := range files {
 		entrySize, err := processDirEntry(file, path, recursive, all)
 		if err != nil {
