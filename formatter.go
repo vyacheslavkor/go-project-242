@@ -8,7 +8,7 @@ func FormatSize(size int64, human bool) string {
 	if human {
 		return formatToHuman(size)
 	}
-	return fmt.Sprintf("%dB", size)
+	return fmt.Sprintf("%d%s", size, units[0])
 }
 
 func formatToHuman(size int64) string {
