@@ -12,9 +12,6 @@ formatters:
   settings:
     gofumpt:
       extra-rules: true
-    goimports:
-      local-prefixes:
-        - github.com/vyacheslavkor/go-project-242
 
 linters:
   enable:
@@ -59,17 +56,9 @@ linters:
     errcheck:
       check-type-assertions: true
       check-blank: true
-      exclude-functions:
-        - os.Remove
     nolintlint:
       require-explanation: true
       require-specific: true
     funlen:
       lines: 100
       statements: 50
-
-  exclusions:
-    rules:
-      - path: ^tests/
-        linters:
-          - funlen
