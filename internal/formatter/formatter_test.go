@@ -1,7 +1,6 @@
-package code_test
+package formatter
 
 import (
-	"code"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -31,10 +30,7 @@ func TestFormatSize(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := code.FormatSize(
-				testCase.size,
-				testCase.human,
-			)
+			result := FormatSize(testCase.size, testCase.human)
 			require.Equal(t, testCase.expected, result)
 		})
 	}
