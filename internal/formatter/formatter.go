@@ -1,9 +1,10 @@
-package code
+package formatter
 
 import "fmt"
 
 var units = []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 
+// FormatSize returns a string representation of size in bytes or human-readable form.
 func FormatSize(size int64, human bool) string {
 	if human {
 		return formatToHuman(size)

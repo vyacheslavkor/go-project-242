@@ -1,6 +1,7 @@
 package code
 
 import (
+	"code/internal/formatter"
 	"errors"
 	"fmt"
 	"os"
@@ -122,5 +123,5 @@ func GetPathSize(path string, recursive, human, all bool) (string, error) {
 		}
 	}
 
-	return FormatSize(result, human), nil
+	return formatter.FormatSize(result, human), nil
 }
