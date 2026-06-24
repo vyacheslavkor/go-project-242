@@ -59,18 +59,18 @@ The standard output strictly follows the contract: `<size>\t<path>` (separated b
 
 **1. Basic file size calculation (raw bytes):**
 ```bash
-$ ./bin/hexlet-path-size ./testdata/file1.txt
-2906B	./testdata/file1.txt
+$ ./bin/hexlet-path-size /path/to/file.txt
+1234B	/path/to/file.txt
 ```
 
 **2. Calculating directory size (human-readable):**
 ```bash
-$ ./bin/hexlet-path-size -H ./testdata/in
-2.4KB	./testdata/in
+$ ./bin/hexlet-path-size -H /path/to/directory
+2.4KB	/path/to/directory
 ```
 
 **3. Full recursive calculation including hidden files:**
 ```bash
-$ ./bin/hexlet-path-size -r -H -a ./testdata
-5.3KB	./testdata
+$ ./bin/hexlet-path-size -r -H -a /path/to/directory
+5.3KB	/path/to/directory
 ```

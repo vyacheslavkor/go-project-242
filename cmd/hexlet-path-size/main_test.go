@@ -3,6 +3,7 @@ package main_test
 import (
 	"bytes"
 	"context"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
@@ -13,8 +14,8 @@ import (
 func TestCliCommands(t *testing.T) {
 	tempDir := t.TempDir()
 	compiledPath := filepath.Join(tempDir, "hexlet-path-size")
-	testdata := "testdata"
-	sampleFile := filepath.Join(testdata, "file1.txt")
+	sampleFile := filepath.Join(tempDir, "sample.txt")
+	require.NoError(t, os.WriteFile(sampleFile, []byte("hello"), 0o600))
 
 	ctx := context.Background()
 
@@ -62,7 +63,7 @@ func TestCliCommands(t *testing.T) {
 		},
 		{
 			name:            "non-existent target path",
-			args:            []string{filepath.Join(testdata, "does-not-exist-at-all")},
+			args:            []string{filepath.Join(tempDir, "does-not-exist-at-all")},
 			expectError:     true,
 			stderrSubstring: "path not exists",
 		},
