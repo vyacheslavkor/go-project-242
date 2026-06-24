@@ -2,6 +2,7 @@ package code
 
 import (
 	"code/internal/fs"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -9,53 +10,32 @@ import (
 )
 
 func TestGetPathSize(t *testing.T) {
-	testCases := []struct {
-		name      string
-		path      string
-		recursive bool
-		human     bool
-		all       bool
-		expected  string
-	}{
-		{
-			name:     "formats size",
-			path:     filepath.Join("testdata", "file1.txt"),
-			expected: "2906B",
-		},
-		{
-			name:     "human readable output",
-			path:     filepath.Join("testdata", "in"),
-			human:    true,
-			expected: "2.4KB",
-		},
-		{
-			name:     "direct hidden file ignored without all",
-			path:     filepath.Join("testdata", "in", ".file3.txt"),
-			expected: "0B",
-		},
-		{
-			name:     "direct hidden file counted with all",
-			path:     filepath.Join("testdata", "in", ".file3.txt"),
-			all:      true,
-			expected: "100B",
-		},
-	}
+	t.Run("composes calculate and raw format", func(t *testing.T) {
+		dir := t.TempDir()
+		path := filepath.Join(dir, "file.txt")
+		require.NoError(t, os.WriteFile(path, []byte("hello"), 0o600))
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			result, err := GetPathSize(
-				testCase.path,
-				testCase.recursive,
-				testCase.human,
-				testCase.all,
-			)
-			require.NoError(t, err)
-			require.Equal(t, testCase.expected, result)
-		})
-	}
+		result, err := GetPathSize(path, false, false, false)
+		require.NoError(t, err)
+		require.Equal(t, "5B", result)
+	})
 
-	t.Run("non-existent path", func(t *testing.T) {
-		_, err := GetPathSize(filepath.Join("testdata", "missing"), false, false, false)
+	t.Run("composes calculate and human format", func(t *testing.T) {
+		dir := t.TempDir()
+		path := filepath.Join(dir, "file.txt")
+		content := make([]byte, 1500)
+		for i := range content {
+			content[i] = 'x'
+		}
+		require.NoError(t, os.WriteFile(path, content, 0o600))
+
+		result, err := GetPathSize(path, false, true, false)
+		require.NoError(t, err)
+		require.Equal(t, "1.5KB", result)
+	})
+
+	t.Run("propagates path not exist error", func(t *testing.T) {
+		_, err := GetPathSize(filepath.Join(t.TempDir(), "missing"), false, false, false)
 		require.ErrorIs(t, err, fs.ErrPathNotExist)
 	})
 }

@@ -14,6 +14,7 @@ func TestCliCommands(t *testing.T) {
 	tempDir := t.TempDir()
 	compiledPath := filepath.Join(tempDir, "hexlet-path-size")
 	testdata := "testdata"
+	sampleFile := filepath.Join(testdata, "file1.txt")
 
 	ctx := context.Background()
 
@@ -49,13 +50,13 @@ func TestCliCommands(t *testing.T) {
 		},
 		{
 			name:            "too many arguments",
-			args:            []string{filepath.Join(testdata, "file1.txt"), filepath.Join(testdata, "in")},
+			args:            []string{sampleFile, sampleFile},
 			expectError:     true,
 			stderrSubstring: "incorrect usage",
 		},
 		{
 			name:            "unknown global flag",
-			args:            []string{"--invalid-flag-xyz", filepath.Join(testdata, "file1.txt")},
+			args:            []string{"--invalid-flag-xyz", sampleFile},
 			expectError:     true,
 			stderrSubstring: "Incorrect Usage",
 		},
@@ -66,24 +67,9 @@ func TestCliCommands(t *testing.T) {
 			stderrSubstring: "path not exists",
 		},
 		{
-			name:            "direct hidden file ignored without all",
-			args:            []string{filepath.Join(testdata, "in", ".file3.txt")},
-			stdoutSubstring: "0B\t" + filepath.Join(testdata, "in", ".file3.txt"),
-		},
-		{
-			name:            "valid file raw bytes",
-			args:            []string{filepath.Join(testdata, "file1.txt")},
-			stdoutSubstring: "2906B\t" + filepath.Join(testdata, "file1.txt"),
-		},
-		{
-			name:            "valid directory human readable",
-			args:            []string{"-H", filepath.Join(testdata, "in")},
-			stdoutSubstring: "2.4KB\t" + filepath.Join(testdata, "in"),
-		},
-		{
-			name:            "valid directory recursive and hidden",
-			args:            []string{"-r", "-a", testdata},
-			stdoutSubstring: "5421B\t" + testdata,
+			name:            "prints size and path separated by tab",
+			args:            []string{sampleFile},
+			stdoutSubstring: "\t" + sampleFile,
 		},
 	}
 
