@@ -47,7 +47,7 @@ The utility expects exactly one argument: the path to a file or directory. By de
 
 - **Regular files** are evaluated by their actual size.
 - **Symlinks** are evaluated by the size of the link itself, not the target file.
-- **Hidden files and directories** are ignored and contribute `0B` unless `--all` (`-a`) is provided. This also applies when the hidden path itself is passed directly as the argument.
+- **Hidden files and directories** are ignored and contribute `0B` unless `--all` (`-a`) is provided. However, if the hidden path itself is passed directly as an argument, it is evaluated regardless of the --all flag.
 - **Special files** (sockets, devices, pipes) are ignored and contribute `0B`.
 - **Hard links** are evaluated as regular files. No deduplication is performed during recursive directory traversal.
 
