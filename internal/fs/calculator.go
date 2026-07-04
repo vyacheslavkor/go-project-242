@@ -111,10 +111,6 @@ func CalculateSize(path string, recursive, all bool) (int64, error) {
 		return 0, fmt.Errorf("failed to read path metadata: %w", err)
 	}
 
-	if !all && isHiddenFile(fileInfo) {
-		return 0, nil
-	}
-
 	result := int64(0)
 
 	if fileInfo.IsDir() {
