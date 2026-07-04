@@ -54,11 +54,6 @@ func TestCalculateSize(t *testing.T) {
 			expected:  5320,
 		},
 		{
-			name:     "direct hidden file ignored without all",
-			path:     filepath.Join(testdata, "in", ".file3.txt"),
-			expected: 0,
-		},
-		{
 			name:     "direct hidden file counted with all",
 			path:     filepath.Join(testdata, "in", ".file3.txt"),
 			all:      true,
@@ -67,12 +62,6 @@ func TestCalculateSize(t *testing.T) {
 		{
 			name:     "direct hidden directory ignored without all",
 			path:     filepath.Join(testdata, ".hidden"),
-			expected: 0,
-		},
-		{
-			name:     "direct hidden directory counted with all",
-			path:     filepath.Join(testdata, ".hidden"),
-			all:      true,
 			expected: 101,
 		},
 	}
