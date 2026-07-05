@@ -8,16 +8,6 @@ import (
 	"strings"
 )
 
-func filterHiddenFiles(files []os.DirEntry) []os.DirEntry {
-	result := []os.DirEntry{}
-	for _, file := range files {
-		if !isHiddenFile(file.Name()) {
-			result = append(result, file)
-		}
-	}
-	return result
-}
-
 func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
@@ -28,13 +18,13 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 		return 0, fmt.Errorf("failed to read directory: %w", err)
 	}
 
-	if !all {
-		files = filterHiddenFiles(files)
-	}
-
 	result := int64(0)
 
 	for _, file := range files {
+		if !all && isHiddenFile(file.Name()) {
+			continue
+		}
+
 		entrySize, err := processDirEntry(file, path, recursive, all)
 		if err != nil {
 			return 0, err
