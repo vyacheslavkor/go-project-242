@@ -8,14 +8,10 @@ import (
 	"strings"
 )
 
-type namer interface {
-	Name() string
-}
-
 func filterHiddenFiles(files []os.DirEntry) []os.DirEntry {
 	result := []os.DirEntry{}
 	for _, file := range files {
-		if !isHiddenFile(file) {
+		if !isHiddenFile(file.Name()) {
 			result = append(result, file)
 		}
 	}
@@ -89,8 +85,8 @@ func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64,
 	return size, nil
 }
 
-func isHiddenFile(file namer) bool {
-	return strings.HasPrefix(file.Name(), ".")
+func isHiddenFile(fileName string) bool {
+	return strings.HasPrefix(fileName, ".")
 }
 
 // CalculateSize returns the total size in bytes for path.
