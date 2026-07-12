@@ -7,6 +7,28 @@ import (
 	"strings"
 )
 
+// CalculateSize returns the total size in bytes for path.
+// Symlinks are measured by link size, not target. Hidden files and directories
+// contribute 0 bytes unless all is true, including when the hidden path itself
+// is passed directly. Special files are ignored and contribute 0 bytes.
+func CalculateSize(path string, recursive, all bool) (int64, error) {
+	fileInfo, err := os.Lstat(path)
+	if err != nil {
+		return 0, fmt.Errorf("failed to read path metadata for %s: %w", path, err)
+	}
+
+	if fileInfo.IsDir() {
+		return getDirectorySize(path, recursive, all)
+	}
+
+	size, ok := getFileSize(fileInfo)
+	if ok {
+		return size, nil
+	}
+
+	return 0, nil
+}
+
 func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
@@ -51,16 +73,11 @@ func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64,
 			return 0, nil
 		}
 
-		subResult, subError := getDirectorySize(
+		return getDirectorySize(
 			filepath.Join(path, file.Name()),
 			recursive,
 			all,
 		)
-		if subError != nil {
-			return 0, subError
-		}
-
-		return subResult, nil
 	}
 
 	size, ok := getFileSize(fileInfo)
@@ -73,33 +90,4 @@ func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64,
 
 func isHiddenFile(fileName string) bool {
 	return strings.HasPrefix(fileName, ".")
-}
-
-// CalculateSize returns the total size in bytes for path.
-// Symlinks are measured by link size, not target. Hidden files and directories
-// contribute 0 bytes unless all is true, including when the hidden path itself
-// is passed directly. Special files are ignored and contribute 0 bytes.
-func CalculateSize(path string, recursive, all bool) (int64, error) {
-	fileInfo, err := os.Lstat(path)
-	if err != nil {
-		return 0, fmt.Errorf("failed to read path metadata for %s: %w", path, err)
-	}
-
-	result := int64(0)
-
-	if fileInfo.IsDir() {
-		dirResult, err := getDirectorySize(path, recursive, all)
-		if err != nil {
-			return 0, err
-		}
-
-		result = dirResult
-	} else {
-		size, ok := getFileSize(fileInfo)
-		if ok {
-			result = size
-		}
-	}
-
-	return result, nil
 }
