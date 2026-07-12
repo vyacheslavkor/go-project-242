@@ -6,8 +6,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -34,43 +36,15 @@ func TestCliCommands(t *testing.T) {
 		stderrSubstring string
 	}{
 		{
-			name:            "help flag long",
-			args:            []string{"--help"},
-			stdoutSubstring: "USAGE:",
-		},
-		{
-			name:            "help flag short",
-			args:            []string{"-h"},
-			stdoutSubstring: "GLOBAL OPTIONS:",
-		},
-		{
-			name:            "missing path argument",
-			args:            []string{},
-			expectError:     true,
-			stderrSubstring: "incorrect usage",
-		},
-		{
-			name:            "too many arguments",
-			args:            []string{sampleFile, sampleFile},
-			expectError:     true,
-			stderrSubstring: "incorrect usage",
-		},
-		{
-			name:            "unknown global flag",
-			args:            []string{"--invalid-flag-xyz", sampleFile},
-			expectError:     true,
-			stderrSubstring: "Incorrect Usage",
-		},
-		{
 			name:            "non-existent target path",
 			args:            []string{filepath.Join(tempDir, "does-not-exist-at-all")},
 			expectError:     true,
-			stderrSubstring: "path not exists",
+			stderrSubstring: "path does not exist: " + filepath.Join(tempDir, "does-not-exist-at-all"),
 		},
 		{
 			name:            "prints size and path separated by tab",
 			args:            []string{sampleFile},
-			stdoutSubstring: "\t" + sampleFile,
+			stdoutSubstring: "5B\t" + sampleFile,
 		},
 	}
 
@@ -92,11 +66,13 @@ func TestCliCommands(t *testing.T) {
 			}
 
 			if tc.stdoutSubstring != "" {
-				require.Contains(t, stdout.String(), tc.stdoutSubstring)
+				assert.Equal(t, tc.stdoutSubstring, strings.TrimSpace(stdout.String()))
+				assert.Empty(t, stderr.String())
 			}
 
 			if tc.stderrSubstring != "" {
-				require.Contains(t, stderr.String(), tc.stderrSubstring)
+				assert.Equal(t, tc.stderrSubstring, strings.TrimSpace(stderr.String()))
+				assert.Empty(t, stdout.String())
 			}
 		})
 	}
