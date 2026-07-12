@@ -1,7 +1,6 @@
 package code
 
 import (
-	"code/internal/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -36,6 +35,6 @@ func TestGetPathSize(t *testing.T) {
 
 	t.Run("propagates path not exist error", func(t *testing.T) {
 		_, err := GetPathSize(filepath.Join(t.TempDir(), "missing"), false, false, false)
-		require.ErrorIs(t, err, fs.ErrPathNotExist)
+		require.ErrorIs(t, err, os.ErrNotExist)
 	})
 }

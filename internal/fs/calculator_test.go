@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -80,6 +81,52 @@ func TestCalculateSize(t *testing.T) {
 
 	t.Run("non-existent path", func(t *testing.T) {
 		_, err := CalculateSize(filepath.Join(testdata, "missing"), false, false)
-		require.ErrorIs(t, err, ErrPathNotExist)
+		require.ErrorIs(t, err, os.ErrNotExist)
 	})
+}
+
+func TestGetFileSize_FSErrors(t *testing.T) {
+	tempDir := t.TempDir()
+	nonExistentPath := filepath.Join(tempDir, "missing")
+
+	notPermittedPath := filepath.Join(tempDir, "unreadable")
+	require.NoError(t, os.Mkdir(notPermittedPath, 0o000))
+
+	testCases := []struct {
+		name      string
+		path      string
+		recursive bool
+		expected  error
+		errMsg    string
+	}{
+		{
+			name:      "non-existent path",
+			path:      nonExistentPath,
+			recursive: false,
+			expected:  os.ErrNotExist,
+			errMsg:    "failed to read path metadata for " + nonExistentPath,
+		},
+		{
+			name:      "not permitted path",
+			path:      notPermittedPath,
+			recursive: false,
+			expected:  os.ErrPermission,
+			errMsg:    "failed to read directory for " + notPermittedPath,
+		},
+		{
+			name:      "not permitted path recursive",
+			path:      tempDir,
+			recursive: true,
+			expected:  os.ErrPermission,
+			errMsg:    "failed to read directory for " + tempDir,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			_, err := CalculateSize(testCase.path, testCase.recursive, false)
+			assert.ErrorIs(t, err, testCase.expected)
+			assert.ErrorContains(t, err, testCase.errMsg)
+		})
+	}
 }

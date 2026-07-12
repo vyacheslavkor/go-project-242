@@ -1,7 +1,6 @@
 package fs
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,11 +10,7 @@ import (
 func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
-		if errors.Is(err, os.ErrPermission) {
-			return 0, fmt.Errorf("%s: %w", path, ErrPermissionDenied)
-		}
-
-		return 0, fmt.Errorf("failed to read directory: %w", err)
+		return 0, fmt.Errorf("failed to read directory for %s: %w", path, err)
 	}
 
 	result := int64(0)
@@ -47,7 +42,8 @@ func getFileSize(fileInfo os.FileInfo) (int64, bool) {
 func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64, error) {
 	fileInfo, err := file.Info()
 	if err != nil {
-		return 0, fmt.Errorf("failed to read file info: %w", err)
+		fullPath := filepath.Join(path, file.Name())
+		return 0, fmt.Errorf("failed to read file info for %s: %w", fullPath, err)
 	}
 
 	if fileInfo.IsDir() {
@@ -86,15 +82,7 @@ func isHiddenFile(fileName string) bool {
 func CalculateSize(path string, recursive, all bool) (int64, error) {
 	fileInfo, err := os.Lstat(path)
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return 0, fmt.Errorf("%s: %w", path, ErrPathNotExist)
-		}
-
-		if errors.Is(err, os.ErrPermission) {
-			return 0, fmt.Errorf("%s: %w", path, ErrPermissionDenied)
-		}
-
-		return 0, fmt.Errorf("failed to read path metadata: %w", err)
+		return 0, fmt.Errorf("failed to read path metadata for %s: %w", path, err)
 	}
 
 	result := int64(0)
