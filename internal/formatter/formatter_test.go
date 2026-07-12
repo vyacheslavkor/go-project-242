@@ -3,7 +3,7 @@ package formatter
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFormatSize(t *testing.T) {
@@ -31,7 +31,11 @@ func TestFormatSize(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			result := FormatSize(testCase.size, testCase.human)
-			require.Equal(t, testCase.expected, result)
+			assert.Equal(t, testCase.expected, result)
 		})
 	}
+}
+
+func TestFormatOutput(t *testing.T) {
+	assert.Equal(t, "1.0KB\ttestdata/file1.txt", FormatOutput("1.0KB", "testdata/file1.txt"))
 }
