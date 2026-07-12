@@ -1,6 +1,8 @@
 package fs
 
 import (
+	"context"
+	"net"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,8 +14,14 @@ import (
 func TestCalculateSize(t *testing.T) {
 	testdata := "testdata"
 
-	symlinkRoot := filepath.Join(t.TempDir(), "link")
+	testDir := t.TempDir()
+	symlinkRoot := filepath.Join(testDir, "link")
 	require.NoError(t, os.Symlink("in", symlinkRoot))
+
+	socketPath := filepath.Join(testDir, "socket.sock")
+	var lc net.ListenConfig
+	_, err := lc.Listen(context.Background(), "unix", socketPath)
+	require.NoError(t, err)
 
 	testCases := []struct {
 		name      string
@@ -33,7 +41,12 @@ func TestCalculateSize(t *testing.T) {
 			expected: 2,
 		},
 		{
-			name:     "directory",
+			name:     "socket file",
+			path:     socketPath,
+			expected: 0,
+		},
+		{
+			name:     "directory with files",
 			path:     filepath.Join(testdata, "in"),
 			expected: 2414,
 		},
@@ -55,13 +68,18 @@ func TestCalculateSize(t *testing.T) {
 			expected:  5320,
 		},
 		{
+			name:     "directory with files and dirs",
+			path:     testdata,
+			expected: 2906,
+		},
+		{
 			name:     "direct hidden file counted with all",
 			path:     filepath.Join(testdata, "in", ".file3.txt"),
 			all:      true,
 			expected: 101,
 		},
 		{
-			name:     "direct hidden directory ignored without all",
+			name:     "direct hidden directory counted without all",
 			path:     filepath.Join(testdata, ".hidden"),
 			expected: 101,
 		},
@@ -74,8 +92,9 @@ func TestCalculateSize(t *testing.T) {
 				testCase.recursive,
 				testCase.all,
 			)
-			require.NoError(t, err)
-			require.Equal(t, testCase.expected, result)
+
+			assert.NoError(t, err)
+			assert.Equal(t, testCase.expected, result)
 		})
 	}
 

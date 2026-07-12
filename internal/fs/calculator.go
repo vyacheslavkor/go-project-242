@@ -8,13 +8,14 @@ import (
 )
 
 // CalculateSize returns the total size in bytes for path.
-// Symlinks are measured by link size, not target. Hidden files and directories
-// contribute 0 bytes unless all is true, including when the hidden path itself
-// is passed directly. Special files are ignored and contribute 0 bytes.
+// Symlinks are measured by link size, not target. Hidden entries nested during
+// directory traversal contribute 0 bytes unless all is true. A hidden path
+// passed directly as path is always evaluated. Special files are ignored and
+// contribute 0 bytes.
 func CalculateSize(path string, recursive, all bool) (int64, error) {
-	fileInfo, err := os.Lstat(path)
+	fileInfo, err := lstatPath(path)
 	if err != nil {
-		return 0, fmt.Errorf("failed to read path metadata for %s: %w", path, err)
+		return 0, err
 	}
 
 	if fileInfo.IsDir() {
@@ -29,10 +30,19 @@ func CalculateSize(path string, recursive, all bool) (int64, error) {
 	return 0, nil
 }
 
-func getDirectorySize(path string, recursive, all bool) (int64, error) {
-	files, err := os.ReadDir(path)
+func lstatPath(path string) (os.FileInfo, error) {
+	fileInfo, err := os.Lstat(path)
 	if err != nil {
-		return 0, fmt.Errorf("failed to read directory for %s: %w", path, err)
+		return nil, fmt.Errorf("failed to read path metadata for %s: %w", path, err)
+	}
+
+	return fileInfo, nil
+}
+
+func getDirectorySize(path string, recursive, all bool) (int64, error) {
+	files, err := readDirectory(path)
+	if err != nil {
+		return 0, err
 	}
 
 	result := int64(0)
@@ -52,6 +62,15 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	return result, nil
 }
 
+func readDirectory(path string) ([]os.DirEntry, error) {
+	files, err := os.ReadDir(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory for %s: %w", path, err)
+	}
+
+	return files, nil
+}
+
 func getFileSize(fileInfo os.FileInfo) (int64, bool) {
 	mode := fileInfo.Mode()
 	if !mode.IsRegular() && mode.Type() != os.ModeSymlink {
@@ -62,10 +81,9 @@ func getFileSize(fileInfo os.FileInfo) (int64, bool) {
 }
 
 func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64, error) {
-	fileInfo, err := file.Info()
+	fileInfo, err := readDirEntryInfo(file, path)
 	if err != nil {
-		fullPath := filepath.Join(path, file.Name())
-		return 0, fmt.Errorf("failed to read file info for %s: %w", fullPath, err)
+		return 0, err
 	}
 
 	if fileInfo.IsDir() {
@@ -86,6 +104,16 @@ func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64,
 	}
 
 	return size, nil
+}
+
+func readDirEntryInfo(file os.DirEntry, parentPath string) (os.FileInfo, error) {
+	fileInfo, err := file.Info()
+	if err != nil {
+		fullPath := filepath.Join(parentPath, file.Name())
+		return nil, fmt.Errorf("failed to read file info for %s: %w", fullPath, err)
+	}
+
+	return fileInfo, nil
 }
 
 func isHiddenFile(fileName string) bool {
