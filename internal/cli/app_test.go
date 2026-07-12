@@ -14,14 +14,14 @@ import (
 	urfave "github.com/urfave/cli/v3"
 )
 
-func TestNewApp(t *testing.T) {
+func TestNewCommand(t *testing.T) {
 	testCases := []struct {
 		name string
 		args []string
 		want string
 	}{
 		{
-			name: "no args",
+			name: "default",
 			args: []string{"testdata"},
 			want: "2906B\ttestdata",
 		},
@@ -51,7 +51,7 @@ func TestNewApp(t *testing.T) {
 			want: "5523B\ttestdata",
 		},
 		{
-			name: "",
+			name: "recursive with hidden and human",
 			args: []string{"testdata", "-r", "-a", "-H"},
 			want: "5.4KB\ttestdata",
 		},
