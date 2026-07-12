@@ -14,16 +14,19 @@ func FormatSize(size int64, human bool) string {
 
 func formatToHuman(size int64) string {
 	sizeFloat := float64(size)
-	unitIndex := 0
-	sizeStepMultiplier := float64(1024)
-	for sizeFloat >= sizeStepMultiplier && unitIndex < len(units)-1 {
+	const sizeStepMultiplier float64 = 1024
+
+	for _, unit := range units[:len(units)-1] {
+		if sizeFloat < sizeStepMultiplier {
+			if unit == "B" {
+				return fmt.Sprintf("%.0f%s", sizeFloat, unit)
+			}
+
+			return fmt.Sprintf("%.1f%s", sizeFloat, unit)
+		}
+
 		sizeFloat /= sizeStepMultiplier
-		unitIndex++
 	}
 
-	if unitIndex == 0 {
-		return fmt.Sprintf("%.0f%s", sizeFloat, units[unitIndex])
-	}
-
-	return fmt.Sprintf("%.1f%s", sizeFloat, units[unitIndex])
+	return fmt.Sprintf("%.1f%s", sizeFloat, units[len(units)-1])
 }
