@@ -36,6 +36,7 @@ linters:
     - misspell
     - funlen
     - dupl
+    - whitespace
 
   settings:
     cyclop:
