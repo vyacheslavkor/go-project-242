@@ -1,0 +1,21 @@
+NAME:
+   hexlet-path-size - print size of a file or directory; supports -r (recursive), -H (human-readable), -a (include hidden)
+
+USAGE:
+   hexlet-path-size [global options] <path>
+
+DESCRIPTION:
+   Calculate and print the size of a file or directory.
+
+   CALCULATION RULES:
+   - Regular files: evaluated by their actual size.
+   - Symlinks: evaluated by the size of the link itself, not the target file.
+   - Hidden files/dirs nested during traversal: ignored (returns 0B) unless the --all (-a) flag is provided. A hidden path passed directly as an argument is always evaluated.
+   - Special files (sockets, devices, pipes): ignored (returns 0B).
+   - Hard links: evaluated as regular files. No deduplication is performed during recursive directory traversal.
+
+GLOBAL OPTIONS:
+   --recursive, -r  recursive size of directories (default: false)
+   --human, -H      human-readable sizes (auto-select unit) (default: false)
+   --all, -a        include hidden files and directories (default: false)
+   --help, -h       show help

@@ -15,6 +15,7 @@ import (
 )
 
 func TestNewCommand(t *testing.T) {
+	testdataPath := filepath.Join("testdata", "fs")
 	testCases := []struct {
 		name string
 		args []string
@@ -22,38 +23,38 @@ func TestNewCommand(t *testing.T) {
 	}{
 		{
 			name: "default",
-			args: []string{"testdata"},
-			want: "2906B\ttestdata",
+			args: []string{testdataPath},
+			want: "2906B\t" + testdataPath,
 		},
 		{
 			name: "help",
 			args: []string{"--help"},
-			want: getHelp(),
+			want: getHelp(t),
 		},
 		{
 			name: "recursive",
-			args: []string{"testdata", "-r"},
-			want: "5320B\ttestdata",
+			args: []string{testdataPath, "-r"},
+			want: "5320B\t" + testdataPath,
 		},
 		{
 			name: "with hidden",
-			args: []string{filepath.Join("testdata", ".hidden"), "-a"},
-			want: "101B\ttestdata/.hidden",
+			args: []string{filepath.Join(testdataPath, ".hidden"), "-a"},
+			want: "101B\t" + filepath.Join(testdataPath, ".hidden"),
 		},
 		{
 			name: "human",
-			args: []string{filepath.Join("testdata", "file1.txt"), "-H"},
-			want: "2.8KB\ttestdata/file1.txt",
+			args: []string{filepath.Join(testdataPath, "file1.txt"), "-H"},
+			want: "2.8KB\t" + filepath.Join(testdataPath, "file1.txt"),
 		},
 		{
 			name: "recursive with hidden",
-			args: []string{"testdata", "-r", "-a"},
-			want: "5523B\ttestdata",
+			args: []string{testdataPath, "-r", "-a"},
+			want: "5523B\t" + testdataPath,
 		},
 		{
 			name: "recursive with hidden and human",
-			args: []string{"testdata", "-r", "-a", "-H"},
-			want: "5.4KB\ttestdata",
+			args: []string{testdataPath, "-r", "-a", "-H"},
+			want: "5.4KB\t" + testdataPath,
 		},
 	}
 
@@ -117,19 +118,19 @@ func TestNewApp_Run_FSErrors(t *testing.T) {
 			name:   "without arguments",
 			args:   []string{},
 			want:   "incorrect usage: expected 1 argument, got 0",
-			stdOut: getHelp(),
+			stdOut: getHelp(t),
 		},
 		{
 			name:   "to many arguments",
 			args:   []string{"testdata", "testdata2"},
 			want:   "incorrect usage: expected 1 argument, got 2",
-			stdOut: getHelp(),
+			stdOut: getHelp(t),
 		},
 		{
 			name:   "incorrect flag usage",
 			args:   []string{"-H=g"},
 			want:   "incorrect usage: invalid value \"g\" for flag -H: parse error",
-			stdOut: getHelp(),
+			stdOut: getHelp(t),
 		},
 	}
 
@@ -162,26 +163,11 @@ func TestNewApp_Run_FSErrors(t *testing.T) {
 	}
 }
 
-func getHelp() string {
-	return `NAME:
-   hexlet-path-size - print size of a file or directory; supports -r (recursive), -H (human-readable), -a (include hidden)
+func getHelp(t *testing.T) string {
+	t.Helper()
+	helpPath := filepath.Join("testdata", "fixtures", "help.txt")
+	helpContent, err := os.ReadFile(filepath.Clean(helpPath))
+	require.NoError(t, err)
 
-USAGE:
-   hexlet-path-size [global options] <path>
-
-DESCRIPTION:
-   Calculate and print the size of a file or directory.
-
-   CALCULATION RULES:
-   - Regular files: evaluated by their actual size.
-   - Symlinks: evaluated by the size of the link itself, not the target file.
-   - Hidden files/dirs nested during traversal: ignored (returns 0B) unless the --all (-a) flag is provided. A hidden path passed directly as an argument is always evaluated.
-   - Special files (sockets, devices, pipes): ignored (returns 0B).
-   - Hard links: evaluated as regular files. No deduplication is performed during recursive directory traversal.
-
-GLOBAL OPTIONS:
-   --recursive, -r  recursive size of directories (default: false)
-   --human, -H      human-readable sizes (auto-select unit) (default: false)
-   --all, -a        include hidden files and directories (default: false)
-   --help, -h       show help`
+	return strings.TrimSpace(string(helpContent))
 }
