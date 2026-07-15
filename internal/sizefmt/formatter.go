@@ -18,20 +18,20 @@ func ToOutput(sizeStr, path string) string {
 }
 
 func toHuman(size int64) string {
-	sizeFloat := float64(size)
-	const sizeStepMultiplier float64 = 1024
+	humanSize := float64(size)
+	const unitStep float64 = 1024
 
-	for _, unit := range units[:len(units)-1] {
-		if sizeFloat < sizeStepMultiplier {
-			if unit == "B" {
-				return fmt.Sprintf("%.0f%s", sizeFloat, unit)
+	for i, unit := range units[:len(units)-1] {
+		if humanSize < unitStep {
+			if i == 0 {
+				return fmt.Sprintf("%.0f%s", humanSize, unit)
 			}
 
-			return fmt.Sprintf("%.1f%s", sizeFloat, unit)
+			return fmt.Sprintf("%.1f%s", humanSize, unit)
 		}
 
-		sizeFloat /= sizeStepMultiplier
+		humanSize /= unitStep
 	}
 
-	return fmt.Sprintf("%.1f%s", sizeFloat, units[len(units)-1])
+	return fmt.Sprintf("%.1f%s", humanSize, units[len(units)-1])
 }
