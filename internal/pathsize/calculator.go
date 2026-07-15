@@ -1,4 +1,4 @@
-package fs
+package pathsize
 
 import (
 	"fmt"
@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-// CalculateSize returns the total size in bytes for path.
+// Calculate returns the total size in bytes for path.
 // Symlinks are measured by link size, not target. Hidden entries nested during
 // directory traversal contribute 0 bytes unless all is true. A hidden path
 // passed directly as path is always evaluated. Special files are ignored and
 // contribute 0 bytes.
-func CalculateSize(path string, recursive, all bool) (int64, error) {
+func Calculate(path string, recursive, all bool) (int64, error) {
 	fileInfo, err := lstatPath(path)
 	if err != nil {
 		return 0, err

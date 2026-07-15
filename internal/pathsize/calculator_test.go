@@ -1,4 +1,4 @@
-package fs
+package pathsize
 
 import (
 	"context"
@@ -87,7 +87,7 @@ func TestCalculateSize(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			result, err := CalculateSize(
+			result, err := Calculate(
 				testCase.path,
 				testCase.recursive,
 				testCase.all,
@@ -99,7 +99,7 @@ func TestCalculateSize(t *testing.T) {
 	}
 
 	t.Run("non-existent path", func(t *testing.T) {
-		_, err := CalculateSize(filepath.Join(testdata, "missing"), false, false)
+		_, err := Calculate(filepath.Join(testdata, "missing"), false, false)
 		require.ErrorIs(t, err, os.ErrNotExist)
 	})
 }
@@ -143,7 +143,7 @@ func TestGetFileSize_FSErrors(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			_, err := CalculateSize(testCase.path, testCase.recursive, false)
+			_, err := Calculate(testCase.path, testCase.recursive, false)
 			assert.ErrorIs(t, err, testCase.expected)
 			assert.ErrorContains(t, err, testCase.errMsg)
 		})
