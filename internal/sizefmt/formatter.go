@@ -1,23 +1,23 @@
-package formatter
+package sizefmt
 
 import "fmt"
 
 var units = []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 
-// FormatSize returns a string representation of size in bytes or human-readable form.
-func FormatSize(size int64, human bool) string {
+// WithUnits returns a string representation of size in bytes or human-readable form.
+func WithUnits(size int64, human bool) string {
 	if human {
-		return formatToHuman(size)
+		return toHuman(size)
 	}
 	return fmt.Sprintf("%d%s", size, units[0])
 }
 
-// FormatOutput returns a string representation of size and path.
-func FormatOutput(sizeStr, path string) string {
+// ToOutput returns a string representation of size and path.
+func ToOutput(sizeStr, path string) string {
 	return fmt.Sprintf("%s\t%s", sizeStr, path)
 }
 
-func formatToHuman(size int64) string {
+func toHuman(size int64) string {
 	sizeFloat := float64(size)
 	const sizeStepMultiplier float64 = 1024
 

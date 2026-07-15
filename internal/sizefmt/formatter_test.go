@@ -1,4 +1,4 @@
-package formatter
+package sizefmt
 
 import (
 	"testing"
@@ -30,12 +30,12 @@ func TestFormatSize(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := FormatSize(testCase.size, testCase.human)
+			result := WithUnits(testCase.size, testCase.human)
 			assert.Equal(t, testCase.expected, result)
 		})
 	}
 }
 
 func TestFormatOutput(t *testing.T) {
-	assert.Equal(t, "1.0KB\ttestdata/file1.txt", FormatOutput("1.0KB", "testdata/file1.txt"))
+	assert.Equal(t, "1.0KB\ttestdata/file1.txt", ToOutput("1.0KB", "testdata/file1.txt"))
 }

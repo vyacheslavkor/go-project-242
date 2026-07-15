@@ -2,7 +2,7 @@ package cli
 
 import (
 	"code"
-	"code/internal/formatter"
+	"code/internal/sizefmt"
 	"context"
 	"errors"
 	"fmt"
@@ -33,7 +33,7 @@ func NewCommand() *cli.Command {
 				return newRuntimeError(err)
 			}
 
-			_, err = fmt.Fprintln(cmd.Writer, formatter.FormatOutput(fileSize, path))
+			_, err = fmt.Fprintln(cmd.Writer, sizefmt.ToOutput(fileSize, path))
 			if err != nil {
 				return cli.Exit(fmt.Sprintf("failed to write output: %v", err), 1)
 			}

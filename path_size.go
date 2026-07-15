@@ -1,8 +1,8 @@
 package code
 
 import (
-	"code/internal/formatter"
 	"code/internal/pathsize"
+	"code/internal/sizefmt"
 )
 
 // GetPathSize calculates the size of path and returns it in formatted form.
@@ -15,5 +15,5 @@ func GetPathSize(path string, recursive, human, all bool) (string, error) {
 		return "", err
 	}
 
-	return formatter.FormatSize(size, human), nil
+	return sizefmt.WithUnits(size, human), nil
 }
