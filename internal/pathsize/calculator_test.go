@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCalculateSize(t *testing.T) {
+func TestCalculate(t *testing.T) {
 	testdata := "testdata"
 
 	testDir := t.TempDir()
@@ -104,7 +104,7 @@ func TestCalculateSize(t *testing.T) {
 	})
 }
 
-func TestGetFileSize_FSErrors(t *testing.T) {
+func TestCalculate_FSErrors(t *testing.T) {
 	tempDir := t.TempDir()
 	nonExistentPath := filepath.Join(tempDir, "missing")
 

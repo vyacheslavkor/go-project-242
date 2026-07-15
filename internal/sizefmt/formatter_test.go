@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFormatSize(t *testing.T) {
+func TestWithUnits(t *testing.T) {
 	testCases := []struct {
 		name     string
 		size     int64
@@ -36,6 +36,6 @@ func TestFormatSize(t *testing.T) {
 	}
 }
 
-func TestFormatOutput(t *testing.T) {
+func TestToOutput(t *testing.T) {
 	assert.Equal(t, "1.0KB\ttestdata/file1.txt", ToOutput("1.0KB", "testdata/file1.txt"))
 }
