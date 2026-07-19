@@ -68,11 +68,11 @@ func processDirEntry(file os.DirEntry, path string, recursive, all bool) (int64,
 		return 0, err
 	}
 
-	if fileInfo.IsDir() {
-		if !recursive {
-			return 0, nil
-		}
+	if fileInfo.IsDir() && !recursive {
+		return 0, nil
+	}
 
+	if fileInfo.IsDir() {
 		return getDirectorySize(
 			filepath.Join(path, file.Name()),
 			recursive,
