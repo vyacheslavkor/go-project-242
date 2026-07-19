@@ -14,7 +14,7 @@ func TestCalculate(t *testing.T) {
 		path := filepath.Join(dir, "file.txt")
 		require.NoError(t, os.WriteFile(path, []byte("hello"), 0o600))
 
-		result, err := Calculate(path, false, false, false)
+		result, err := GetPathSize(path, false, false, false)
 		require.NoError(t, err)
 		require.Equal(t, "5B", result)
 	})
@@ -28,13 +28,13 @@ func TestCalculate(t *testing.T) {
 		}
 		require.NoError(t, os.WriteFile(path, content, 0o600))
 
-		result, err := Calculate(path, false, true, false)
+		result, err := GetPathSize(path, false, true, false)
 		require.NoError(t, err)
 		require.Equal(t, "1.5KB", result)
 	})
 
 	t.Run("propagates path not exist error", func(t *testing.T) {
-		_, err := Calculate(filepath.Join(t.TempDir(), "missing"), false, false, false)
+		_, err := GetPathSize(filepath.Join(t.TempDir(), "missing"), false, false, false)
 		require.ErrorIs(t, err, os.ErrNotExist)
 	})
 }

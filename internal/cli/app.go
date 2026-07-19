@@ -23,7 +23,7 @@ func NewCommand() *cli.Command {
 			}
 
 			path := cmd.Args().Get(0)
-			fileSize, err := code.Calculate(
+			fileSize, err := code.GetPathSize(
 				path,
 				cmd.Bool("recursive"),
 				cmd.Bool("human"),
