@@ -13,9 +13,9 @@ import (
 // passed directly as path is always evaluated. Special files are ignored and
 // contribute 0 bytes.
 func Calculate(path string, recursive, all bool) (int64, error) {
-	fileInfo, err := lstatPath(path)
+	fileInfo, err := os.Lstat(path)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to read path metadata for %s: %w", path, err)
 	}
 
 	if fileInfo.IsDir() {
@@ -30,19 +30,10 @@ func Calculate(path string, recursive, all bool) (int64, error) {
 	return 0, nil
 }
 
-func lstatPath(path string) (os.FileInfo, error) {
-	fileInfo, err := os.Lstat(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read path metadata for %s: %w", path, err)
-	}
-
-	return fileInfo, nil
-}
-
 func getDirectorySize(path string, recursive, all bool) (int64, error) {
-	files, err := readDirectory(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to read directory for %s: %w", path, err)
 	}
 
 	result := int64(0)
@@ -60,15 +51,6 @@ func getDirectorySize(path string, recursive, all bool) (int64, error) {
 	}
 
 	return result, nil
-}
-
-func readDirectory(path string) ([]os.DirEntry, error) {
-	files, err := os.ReadDir(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read directory for %s: %w", path, err)
-	}
-
-	return files, nil
 }
 
 func getFileSize(fileInfo os.FileInfo) (int64, bool) {
