@@ -31,55 +31,55 @@ func TestCalculate(t *testing.T) {
 		expected  int64
 	}{
 		{
-			name:     "file",
+			name:     "calculates size of a single regular file",
 			path:     filepath.Join(testdata, "file1.txt"),
 			expected: 2906,
 		},
 		{
-			name:     "symlink file",
+			name:     "returns size of the symlink itself without following",
 			path:     symlinkRoot,
 			expected: 2,
 		},
 		{
-			name:     "socket file",
+			name:     "returns zero size for socket files",
 			path:     socketPath,
 			expected: 0,
 		},
 		{
-			name:     "directory with files",
+			name:     "sums only direct visible files in directory when non-recursive",
 			path:     filepath.Join(testdata, "in"),
 			expected: 2414,
 		},
 		{
-			name:     "directory with hidden",
+			name:     "includes hidden files in directory when 'all' flag is set",
 			path:     filepath.Join(testdata, "in"),
 			all:      true,
 			expected: 2515,
 		},
 		{
-			name:     "empty directory",
+			name:     "returns zero for an empty directory",
 			path:     filepath.Join(testdata, "empty"),
 			expected: 0,
 		},
 		{
-			name:      "recursive directory",
+			name:      "sums sizes recursively including subdirectories",
 			path:      testdata,
 			recursive: true,
 			expected:  5320,
 		},
 		{
-			name:     "directory with files and dirs",
+			name:     "ignores subdirectory contents when 'recursive' flag is false",
 			path:     testdata,
 			expected: 2906,
 		},
 		{
-			name:     "direct hidden file counted with all",
+			name:     "counts explicitly targeted hidden file with 'all' flag",
 			path:     filepath.Join(testdata, "in", ".file3.txt"),
 			all:      true,
 			expected: 101,
 		},
 		{
-			name:     "direct hidden directory counted without all",
+			name:     "counts explicitly targeted hidden directory regardless of 'all' flag",
 			path:     filepath.Join(testdata, ".hidden"),
 			expected: 101,
 		},
