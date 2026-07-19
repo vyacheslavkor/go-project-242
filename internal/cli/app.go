@@ -23,7 +23,7 @@ func NewCommand() *cli.Command {
 			}
 
 			path := cmd.Args().Get(0)
-			fileSize, err := code.GetPathSize(
+			fileSize, err := code.Calculate(
 				path,
 				cmd.Bool("recursive"),
 				cmd.Bool("human"),
@@ -33,7 +33,7 @@ func NewCommand() *cli.Command {
 				return newRuntimeError(err)
 			}
 
-			_, err = fmt.Fprintln(cmd.Writer, sizefmt.ToOutput(fileSize, path))
+			_, err = fmt.Fprintln(cmd.Writer, sizefmt.PrepareOutput(fileSize, path))
 			if err != nil {
 				return cli.Exit(fmt.Sprintf("failed to write output: %v", err), 1)
 			}

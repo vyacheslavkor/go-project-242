@@ -4,16 +4,16 @@ import "fmt"
 
 var units = []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 
-// WithUnits returns a string representation of size in bytes or human-readable form.
-func WithUnits(size int64, human bool) string {
+// Format returns a string representation of size in bytes or human-readable form.
+func Format(size int64, human bool) string {
 	if human {
 		return toHuman(size)
 	}
 	return fmt.Sprintf("%d%s", size, units[0])
 }
 
-// ToOutput returns a string representation of size and path.
-func ToOutput(sizeStr, path string) string {
+// PrepareOutput returns a string representation of size and path.
+func PrepareOutput(sizeStr, path string) string {
 	return fmt.Sprintf("%s\t%s", sizeStr, path)
 }
 

@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetPathSize(t *testing.T) {
+func TestCalculate(t *testing.T) {
 	t.Run("composes calculate and raw format", func(t *testing.T) {
 		dir := t.TempDir()
 		path := filepath.Join(dir, "file.txt")
 		require.NoError(t, os.WriteFile(path, []byte("hello"), 0o600))
 
-		result, err := GetPathSize(path, false, false, false)
+		result, err := Calculate(path, false, false, false)
 		require.NoError(t, err)
 		require.Equal(t, "5B", result)
 	})
@@ -28,13 +28,13 @@ func TestGetPathSize(t *testing.T) {
 		}
 		require.NoError(t, os.WriteFile(path, content, 0o600))
 
-		result, err := GetPathSize(path, false, true, false)
+		result, err := Calculate(path, false, true, false)
 		require.NoError(t, err)
 		require.Equal(t, "1.5KB", result)
 	})
 
 	t.Run("propagates path not exist error", func(t *testing.T) {
-		_, err := GetPathSize(filepath.Join(t.TempDir(), "missing"), false, false, false)
+		_, err := Calculate(filepath.Join(t.TempDir(), "missing"), false, false, false)
 		require.ErrorIs(t, err, os.ErrNotExist)
 	})
 }

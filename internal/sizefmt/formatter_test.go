@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWithUnits(t *testing.T) {
+func TestFormat(t *testing.T) {
 	testCases := []struct {
 		name     string
 		size     int64
@@ -30,12 +30,12 @@ func TestWithUnits(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := WithUnits(testCase.size, testCase.human)
+			result := Format(testCase.size, testCase.human)
 			assert.Equal(t, testCase.expected, result)
 		})
 	}
 }
 
-func TestToOutput(t *testing.T) {
-	assert.Equal(t, "1.0KB\ttestdata/file1.txt", ToOutput("1.0KB", "testdata/file1.txt"))
+func TestPrepareOutput(t *testing.T) {
+	assert.Equal(t, "1.0KB\ttestdata/file1.txt", PrepareOutput("1.0KB", "testdata/file1.txt"))
 }
